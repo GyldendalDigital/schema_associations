@@ -11,10 +11,18 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => {foreign_key: true} }
+        "comments", {}, { :post_id => {foreign_key: true} },
+        "accesses", {}, {}
       )
       class Post < ActiveRecord::Base ; end
       class Comment < ActiveRecord::Base ; end
+      class Access < ActiveRecord::Base  ; end
+    end
+
+    it "should not singularize multiple times on words ending in s" do
+      reflection = Comment.reflect_on_association(:access)
+      expect(reflection).not_to be_nil
+      expect(reflection).opions[:class_name].to eq("Access")
     end
 
     it "should create belongs_to association when reflecting on it" do
