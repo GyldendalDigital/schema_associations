@@ -106,13 +106,18 @@ module SchemaAssociations
         return unless column_names.size == 1
 
         referencing_table_name ||= fk.from_table
-        column_name = column_names.first
+        references_table_name    = fk.to_table
+        column_name = fk.column_names.first
 
-        references_name = fk.to_table.singularize
+        references_name = references_table_name.singularize
         referencing_name = referencing_table_name.singularize
 
-        referencing_class_name = _get_class_name(referencing_name)
-        references_class_name = _get_class_name(references_name)
+        # Note that _get_class_name uses ActiveSupport::Inflector#classify that calls #singularize
+        # therefore the table name must be passed to _get_class_name, else one gets incorrect
+        # class names derived such that "evaluation_accesses" should resolve to "EvaluationAccess"
+        # and not "EvaluationAcces"
+        referencing_class_name = _get_class_name(referencing_table_name)
+        references_class_name = _get_class_name(references_table_name)
 
         names = _determine_association_names(column_name.sub(/_id$/, ''), referencing_name, references_name)
 
