@@ -163,7 +163,7 @@ module SchemaAssociations
             # methods would require getting the class -- which might trigger
             # an autoload which could start some recursion making things much
             # harder to debug.
-            if connection.indexes(referencing_table_name).any?{|index| index.unique && index.columns == [column_name]}
+            if connection.indexes(referencing_table_name).any?{|index| index.unique && index.columns == [column_name] && index.expression.blank? }
               macro = :has_one
               name = names[:has_one]
             else
